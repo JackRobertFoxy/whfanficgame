@@ -44,6 +44,8 @@ jobs:
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
       failure_reason: ${{ steps.enable.outputs.reason }}
+      http_status: ${{ steps.verify.outputs.http_status }}
+      assets_ok: ${{ steps.verify.outputs.assets_ok }}
     steps:
       - name: Enable Pages using repository workflow permissions
         id: enable
@@ -69,6 +71,55 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify deployed game and static assets
+        id: verify
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          python3 - <<'PYCODE'
+          import json, os, time, urllib.request, urllib.parse
+          from html.parser import HTMLParser
+          class Assets(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.urls = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag == 'script' and attrs.get('src'):
+                      self.urls.append(attrs['src'])
+                  if tag == 'link' and attrs.get('rel') == 'stylesheet' and attrs.get('href'):
+                      self.urls.append(attrs['href'])
+          url = os.environ['PAGE_URL']
+          error = ''
+          for attempt in range(6):
+              try:
+                  with urllib.request.urlopen(url, timeout=20) as response:
+                      status = response.status
+                      html = response.read().decode('utf-8')
+                  if status != 200 or '<title>静室' not in html:
+                      raise RuntimeError('Unexpected game page response')
+                  parser = Assets()
+                  parser.feed(html)
+                  if not parser.urls:
+                      raise RuntimeError('Game bundle references missing')
+                  paths = parser.urls + ['manifest.webmanifest','asset-manifest.json','art/castian-armour.png','art/titus-armour.png','art/thalamas-armour.png']
+                  for path in paths:
+                      with urllib.request.urlopen(urllib.parse.urljoin(url,path),timeout=20) as response:
+                          if response.status != 200 or not response.read(1):
+                              raise RuntimeError('Asset unavailable: '+path)
+                  with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+                      out.write('http_status=200\nassets_ok=true\n')
+                  print('Live game page and required bundles/helmeted portraits returned HTTP 200.')
+                  break
+              except Exception as exc:
+                  error = str(exc)
+                  print('Waiting for Pages readiness:',error)
+                  if attempt == 5:
+                      with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+                          out.write('http_status=failed\nassets_ok=false\n')
+                      raise SystemExit(error)
+                  time.sleep(10)
+          PYCODE
   report:
     if: always()
     needs: [build, deploy]
@@ -83,11 +134,13 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
           FAILURE_REASON: ${{ needs.deploy.outputs.failure_reason }}
+          HTTP_STATUS: ${{ needs.deploy.outputs.http_status }}
+          ASSETS_OK: ${{ needs.deploy.outputs.assets_ok }}
         run: |
           python3 - <<'PY'
           import json, os
           from pathlib import Path
-          data = {key.lower(): os.environ.get(key, '') for key in ['BUILD_STATUS','DEPLOY_STATUS','SOURCE_SHA','RUN_ID','PAGE_URL','FAILURE_REASON']}
+          data = {key.lower(): os.environ.get(key, '') for key in ['BUILD_STATUS','DEPLOY_STATUS','SOURCE_SHA','RUN_ID','PAGE_URL','FAILURE_REASON','HTTP_STATUS','ASSETS_OK']}
           data['actions_url'] = 'https://github.com/' + os.environ['GITHUB_REPOSITORY'] + '/actions/runs/' + os.environ['RUN_ID']
           Path('deployment.json').write_text(json.dumps(data, indent=2))
           PY
