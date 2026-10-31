@@ -2,8 +2,6 @@
 
 卡斯蒂安视角的2D点击式心理恐怖游戏，Phaser 3 + TypeScript + Vite。基于用户提供的《Warhammer 40k Fanfic Setup.pdf》，现代与过去双线交错；抽象无脸人物，过去阿斯塔特全封闭头盔。
 
-**18+ 内容提示：** 囚禁、严重伤害的非露骨回忆、控制关系、创伤与身份错位。声音默认关闭，支持减弱闪光／抖动／幻视。本版没有色情画面。每次打开页面需要自行确认成年。
-
 ## 当前发布状态
 
 扩展版已上传，GitHub构建和Release附件发布成功。Pages首次创建被仓库工作流令牌拒绝：`403 Resource not accessible by integration`。仓库所有者需在 [Pages设置](https://github.com/JackRobertFoxy/whfanficgame/settings/pages) 将Source选为GitHub Actions；启用后可继续自动部署。当前不能将预期站点当作已上线。
