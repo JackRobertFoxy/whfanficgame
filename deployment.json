@@ -1,9 +1,11 @@
 {
   "build_status": "success",
-  "deploy_status": "cancelled",
-  "source_sha": "5ab9d28b9a61c05436890d18016b837ed81c41a4",
-  "run_id": "41226968058",
+  "deploy_status": "success",
+  "source_sha": "f5c1b780711ab6fc1c59c0edd9820a728bf81372",
+  "run_id": "41227042666",
   "page_url": "https://jackrobertfoxy.github.io/whfanficgame/",
   "failure_reason": "",
-  "actions_url": "https://github.com/JackRobertFoxy/whfanficgame/actions/runs/41226968058"
+  "http_status": "200",
+  "assets_ok": "true",
+  "actions_url": "https://github.com/JackRobertFoxy/whfanficgame/actions/runs/41227042666"
 }
