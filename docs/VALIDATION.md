@@ -22,7 +22,13 @@
 
 ## 发布结果
 
-本机通过不等于公网部署成功。代码和下载包推送后，以本次源码SHA对应的 `codex-pages-status/deployment.json` 回执补充构建、Release上传、Pages部署与HTTP检查结果；此前v1.1站点已上线，本次v1.2结果尚待记录。
+源码与仓库下载包已上传main，发布源提交：`8e8d47a0acf8579e0c89111dbfe00935ae27eef4`。
+
+GitHub工作流 [41233000132](https://github.com/JackRobertFoxy/whfanficgame/actions/runs/41233000132) 对应同一源SHA的回执为：`build_status=success`、`deploy_status=success`、`http_status=200`、`assets_ok=true`。build作业已完成测试、打包与 `web-v1.2` Release附件上传；deploy作业已发布并读取线上文件。
+
+实际站点：[直接游玩v1.2](https://jackrobertfoxy.github.io/whfanficgame/?v=1.2)。[下载Release网页包](https://github.com/JackRobertFoxy/whfanficgame/releases/download/web-v1.2/quiet-world-web-v1.2.zip)。仓库的downloads目录也保存相同版本的本机校验副本。
+
+线上检查覆盖HTML、脚本、样式、离线清单、三个新增场景与三张全头盔PNG，并确认主要JS包含v1.2标识。最终回执由Git读取 `codex-pages-status` 分支确认。后续只补充文档的提交使用skip ci，不重复部署，也不把文档提交冒充发布源。
 
 ## 实际限制
 

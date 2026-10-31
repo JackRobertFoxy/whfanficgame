@@ -4,7 +4,7 @@
 
 ## 当前发布状态
 
-**已上线：[直接游玩《静室》](https://jackrobertfoxy.github.io/whfanficgame/)**。电脑和安卓浏览器共用此地址。此前v1.1已发布成功。v1.2本次发布结果记录于[验证文档](docs/VALIDATION.md)，以匹配源码提交的部署回执为准。首次进入请等待素材加载；确认成年后开始。
+**已上线：[直接游玩《静室》](https://jackrobertfoxy.github.io/whfanficgame/)**。电脑和安卓浏览器共用此地址。v1.2工作流41233000132已构建、发布成功；线上检查确认新版脚本、三个新场景与全头盔立绘可访问。详见[验证文档](docs/VALIDATION.md)。首次进入请等待素材加载；确认成年后开始。
 
 ![过去线与全封闭头盔人物](screenshots/past-line.png)
 
