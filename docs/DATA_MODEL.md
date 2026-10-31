@@ -1,3 +1,5 @@
+> 当前版本已升级为扩展篇v1.1（十二章、24碎片、存档v3）。本文件保留v1.0基线；当前变更见 [扩展设计](EXPANSION_V1_1.md)。
+
 # 完整篇数据结构 · 存档 v2
 
 权威定义：[src/types.ts](../src/types.ts)。剧情：[src/data/story.json](../src/data/story.json)。七章、15 碎片、34 关注点。

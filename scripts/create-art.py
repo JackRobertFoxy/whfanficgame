@@ -54,3 +54,40 @@ p=OUT/'rift.svg'
 s=p.read_text().replace('<rect width="1600" height="900" fill="url(#vignette)"/>','<path d="M905 215L1003 223L1019 337L899 323Z" fill="#a1b0af" opacity=".6"/><path d="M922 244l63 5 M920 261l58 4 M920 280l71 5" stroke="#4a6273" stroke-width="2"/><rect width="1600" height="900" fill="url(#vignette)"/>')
 p.write_text(s)
 print('Full edition: 7 environments. Faceless character PNG assets preserved.')
+# Expanded past line: gothic warship architecture, not modern room reskins.
+def aquila(x,y,z=1):return f'<g transform="translate({x} {y}) scale({z})" fill="#75858b"><path d="M0 0L-18-15L-62-25L-29 6L-71-4L-34 23L-5 16L0 38L5 16L34 23L71-4L29 6L62-25L18-15Z"/><path d="M-4-1L-15-32L-29-38L-18-42L-5-33L0-18L5-33L18-42L29-38L15-32L4-1Z"/></g>'
+def gothic(purple=False):
+ s='<rect width="1600" height="900" fill="#15202a"/><path d="M0 666H1600V900H0Z" fill="url(#floor)"/>'
+ for x in [30,430,830,1230]:
+  s+=f'<path d="M{x} 680V282Q{x} 139 {x+170} 36Q{x+340} 139 {x+340} 282V680" fill="#1f303b" stroke="#425560" stroke-width="15"/><path d="M{x+52} 640V290Q{x+52} 197 {x+170} 114Q{x+288} 197 {x+288} 290V640Z" fill="'+('#39283e' if purple else '#243c49')+'"/><path d="M'+str(x+170)+' 120V630" stroke="#56636a" stroke-width="6"/>'
+ for x in range(0,1600,160):s+=f'<path d="M800 666L{x} 900" stroke="#66808b" stroke-opacity=".13"/>'
+ for y in [704,756,832]:s+=f'<path d="M0 {y}H1600" stroke="#66808b" stroke-opacity=".13"/>'
+ return s
+def seal(x,y):return f'<g transform="translate({x} {y})"><path d="M-10 0L-19 89L0 77L16 92L10 0Z" fill="#aaa790"/><path d="M-6 28h12 M-8 38h14 M-10 48h15 M-11 58h16" stroke="#6b746d" stroke-width="2"/><circle r="19" fill="#74454a"/><circle r="12" fill="none" stroke="#a26b68" stroke-width="2"/></g>'
+s=gothic()+aquila(790,150,1.25)
+s+='<path d="M245 287H425V640H245Z" fill="#192c38" stroke="#607381" stroke-width="5"/><path d="M269 326L299 305L370 305L400 326V503H269Z" fill="#516a76"/><path d="M290 369H379 M290 399H379 M291 429H379" stroke="#8d9b9e" stroke-width="5"/><path d="M304 502L290 603 M365 503L380 603" stroke="#849095" stroke-width="15"/>'
+s+=seal(298,348)+seal(391,442)
+s+='<path d="M870 280L1120 280L1167 636H824Z" fill="#263a46" stroke="#63717b" stroke-width="6"/><rect x="898" y="312" width="194" height="146" fill="#112c2b" stroke="#738f81" stroke-width="4"/><path d="M916 333h127m-127 22h91m-91 22h141m-141 22h122m-122 22h61" stroke="#7ea98e" stroke-width="4"/><path d="M866 485H1127L1142 539H850Z" fill="#5f6c70"/><path d="M891 501h31m16 0h31m16 0h31m16 0h31" stroke="#172b34" stroke-width="12"/>'+seal(1114,341)
+s+='<g transform="translate(755 190)"><ellipse rx="35" ry="31" fill="#75878b"/><path d="M-25 10L-16 41H16L25 10" fill="#5e737d"/><circle cx="-13" cy="-3" r="8" fill="#132a35"/><circle cx="14" cy="-3" r="10" fill="#a5bec2"/><path d="M0 36Q55 86 21 149 M-29-4L-88 7 M33 0L80-19" stroke="#607887" fill="none" stroke-width="5"/></g><path d="M510 110v198 M1120 50v96" stroke="#65737c" stroke-width="3"/><path d="M486 310h50l-25 44Z" fill="#8e826b"/>'
+(OUT/'past_armoury.svg').write_text(svg(s))
+s=gothic(True)+aquila(775,128,.9)
+s+='<path d="M170 217Q308 410 500 590 M1375 181Q1154 380 970 594 M280 80Q476 296 559 591" fill="none" stroke="#8c7960" stroke-width="12" stroke-dasharray="17 9"/><path d="M191 227Q322 412 509 585 M1382 190Q1163 385 979 600" fill="none" stroke="#b09c77" stroke-width="3"/>'
+s+='<path d="M268 588L525 545L635 678L311 745Z" fill="#5d6b75" stroke="#a1a4a1" stroke-width="3"/><path d="M349 584l72-8l-12 63l-49 20Z" fill="#273844"/><path d="M700 593L846 534L1003 633L907 712L732 683Z" fill="#626f7b"/><path d="M744 582L839 560L883 587L796 620Z" fill="#8e9ca0"/><path d="M922 653l31 17l-17 40l-31-11Z" fill="#98705f"/>'
+s+='<path d="M1127 110h317v410h-317Z" fill="#14202b" stroke="#5d5264" stroke-width="15"/><path d="M1160 148h252v320h-252Z" fill="#34253d"/><path d="M1160 309h252" stroke="#996e89" stroke-opacity=".4" stroke-width="4"/>'
+(OUT/'past_cell.svg').write_text(svg(s))
+s=gothic()+aquila(798,137,1.3)
+s+='<path d="M380 480L831 454L1056 780L213 813Z" fill="#3a4f5e" stroke="#88959b" stroke-width="6"/><path d="M408 500L813 481L977 736L287 767Z" fill="url(#cloth)"/><path d="M414 520L655 510L701 568L377 591Z" fill="#a4b3b5"/><path d="M355 601Q585 557 859 607L978 735L288 766Z" fill="url(#cloth)"/>'
+s+='<path d="M477 275L690 275L728 421H437Z" fill="#203742" stroke="#69818a" stroke-width="4"/><path d="M493 292H674V389H493Z" fill="#173532"/><path d="M509 312h133 M510 334h92 M511 358h119" stroke="#8fba9e" stroke-width="3"/>'+seal(696,300)
+s+='<rect x="1074" y="226" width="143" height="111" fill="#243b46" stroke="#849297" stroke-width="5"/><path d="M1091 244h109m-109 17h109m-109 17h109m-109 17h109" stroke="#0f242e" stroke-width="8"/><path d="M881 236V571 M905 237V547 M929 238V577" stroke="#647e87" stroke-width="9"/><path d="M864 227h80v94h-80Z" fill="#304953" stroke="#799092" stroke-width="3"/>'
+(OUT/'past_rescue.svg').write_text(svg(s))
+# Modern study: richer silhouettes, shelving, desktop and assisted device stand.
+s=room()+rain(995,110,400,350)
+s+='<path d="M93 110H663V523H93Z" fill="#1b2b36" stroke="#536a77" stroke-width="9"/>'
+for x in range(112,640,35):
+ for y in [145,277,409]:s+=f'<rect x="{x}" y="{y}" width="{19+x%9}" height="{71+x%31}" fill="'+(['#415b66','#6d726a','#385263','#6f625e'][x%4])+'"/>'
+s+='<path d="M96 258h562 M96 390h562 M96 518h562" stroke="#526979" stroke-width="10"/><path d="M350 563L1108 523L1302 773L262 840Z" fill="#2b424d" stroke="#6e8189" stroke-width="4"/><path d="M505 278L727 278L771 449L540 456Z" fill="#173039" stroke="#82969e" stroke-width="4"/><path d="M519 294H714L751 429L551 435Z" fill="#28564f"/><path d="M534 315h144m-138 21h114m-108 21h127m-121 21h111" stroke="#8bae9b" stroke-width="3"/><path d="M540 456L771 449L812 474L506 485Z" fill="#708590"/><path d="M879 583L1000 574L1040 643L906 657Z" fill="#a9b6b0"/><path d="M900 603l78-8m-71 24l87-9" stroke="#526f78" stroke-width="3"/><rect x="1244" y="214" width="145" height="81" fill="#294445" stroke="#6a8e85" stroke-width="4"/><circle cx="1266" cy="240" r="6" fill="#9fbc9c"/>'
+(OUT/'study.svg').write_text(svg(s))
+s=room()+rain(800,62,600,432)
+s+='<path d="M798 58h607v444H798Z" fill="none" stroke="#647883" stroke-width="10"/><path d="M215 477H1185L1264 717L167 771Z" fill="url(#cloth)"/><path d="M176 586l87-3l21 156l-117 32Z M1154 557h86l50 171l-106 8Z" fill="#304957"/><path d="M361 626L893 600L1097 820L401 869Z" fill="#273d48" stroke="#617984" stroke-width="4"/><path d="M541 573l52-7l26 96l-65 10Z" fill="#a1b6b4"/><path d="M548 582l38-4l19 70l-47 7Z" fill="#274f4f"/><path d="M574 669l-13 38m-31 4h64" stroke="#708c94" stroke-width="6"/><path d="M835 594l113-7l42 67l-127 15Z" fill="#a2aea7"/><path d="M855 609l73-4m-66 19l74-4" stroke="#5e7278" stroke-width="3"/><path d="M1425 135v463h-58v-463Z" fill="#142631"/><path d="M1406 596v141" stroke="#506979" stroke-width="8"/>'
+(OUT/'penthouse_night.svg').write_text(svg(s))
+print('Expanded edition: 12 distinct scenes, including 3 gothic 40k past environments.')

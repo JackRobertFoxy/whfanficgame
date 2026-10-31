@@ -1,4 +1,6 @@
 import './style.css';
+import {mountPuzzle} from './ui/puzzleWindow';
+import {puzzleNames} from './systems/puzzles';
 import {RoomScene,createGame} from './game/RoomScene';
 import {story, freshState, requirements, canEnter, moveTo, sceneOrder, addUnique, reconstruct, localFragments, fragmentCount, eligible, remember, epilogue} from './systems/state';
 import {loadGame,saveGame,AGE_KEY,parseSave} from './systems/storage';
@@ -30,18 +32,18 @@ app.innerHTML=`
     <label class="check"><input id="adult" type="checkbox"/> 我确认已年满 18 周岁，并愿意接触上述主题。</label>
     <label class="check quiet"><input id="gate-reduce" type="checkbox"/> 减弱恐怖效果（关闭闪光、抖动与幻视）</label>
     <div class="gate-actions"><button id="enter" class="primary" disabled>进入故事 <span>↗</span></button><button id="decline" class="text-button">我未满 18 岁 / 离开</button></div>
-    <p class="gate-foot">卡斯蒂安的故事 · 点击式心理恐怖 · 完整版 v1.0<br/>建议佩戴耳机，音效默认关闭。目标约 30–45 分钟，随时可暂停。</p>
-  </main><div class="gate-corner">一扇门。两个世界。<br/><span>AN UNOFFICIAL FAN GAME</span></div>
+    <p class="gate-foot">卡斯蒂安的故事 · 点击式心理恐怖 · 扩展篇 v1.1<br/>建议佩戴耳机，音效默认关闭。含现代／过去双线与设备解密，随时可暂停。</p>
+  </main><div class="gate-orbit" aria-hidden="true"><i></i><i></i><i></i></div><div class="gate-corner">一扇门。两个世界。<br/><span>AN UNOFFICIAL FAN GAME</span></div>
 </div>
 <div id="shell" hidden>
-  <header class="topbar"><a class="brand" href="#" aria-label="静室，打开暂停菜单"><img src="${asset('art/sigil.svg')}" alt=""/><strong>静室<span> A QUIET WORLD</span></strong></a><div class="top-tools"><span class="prototype">完整篇 / v1.0</span><button id="audio" title="切换音效">声音：关</button><button id="backlog">回看</button><button id="settings">设置 / 暂停</button><button id="save">存档</button><button id="load">读档</button></div></header>
+  <header class="topbar"><a class="brand" href="#" aria-label="静室，打开暂停菜单"><img src="${asset('art/sigil.svg')}" alt=""/><strong>静室<span> A QUIET WORLD</span></strong></a><div class="top-tools"><span class="prototype">扩展篇 / v1.1</span><button id="audio" title="切换音效">声音：关</button><button id="backlog">回看</button><button id="settings">设置 / 暂停</button><button id="save">存档</button><button id="load">读档</button></div></header>
   <div class="workspace"><aside class="sidebar"><div class="subject"><span class="eyebrow">SUBJECT / 001</span><h2>卡斯蒂安</h2><p>这一次，讲述的人是你。</p><div class="status"><span class="status-dot"></span>意识连接中 <span id="world-time">21:04</span></div></div>
-    <div class="side-section"><p class="eyebrow">CURRENT OBJECTIVE</p><h3>此刻的锚点</h3><p id="objective"></p><ul id="requirements"></ul></div>
+    <div class="side-section"><p class="eyebrow">CURRENT OBJECTIVE</p><h3>当前要做的事</h3><p id="objective"></p><ul id="requirements"></ul></div>
     <div class="side-section fragments-side"><div class="section-title"><p class="eyebrow">MEMORY ARCHIVE</p><span id="fragment-count">00 / 15</span></div><button id="memory" class="archive-button">记忆档案 <span>↗</span></button><div id="recent-memories"></div></div>
     <div class="sidebar-bottom"><span class="little-sigil">⌑</span><p>看见的事物没有改变。<br/>改变的是它们的名字。</p><button id="help" class="text-button">操作与人物说明 ↗</button></div></aside>
     <main class="play-area"><div class="scene-heading"><div><p id="chapter" class="eyebrow"></p><h2 id="scene-name"></h2></div><div class="perspective" role="group" aria-label="认知视角"><button id="objective-view" aria-pressed="true">现实记录</button><button id="subjective-view" aria-pressed="false">我的认知</button></div></div>
     <div id="stage" class="stage"><div id="game" aria-label="点击场景中的发光标记进行观察"></div><div class="film-lines" aria-hidden="true"></div><div class="stage-top"><span id="scene-caption"></span><span class="recording">● <span id="view-label">REALITY RECORD</span></span></div><div class="stage-bottom"><span>点击标记观察 · 也可使用下方物件列表</span><span id="scene-number">01 / 07</span></div><div id="loading">正在建立场景…</div></div>
-    <div id="object-list" class="object-list" role="group" aria-label="可交互物件"></div>
+    <div class="movement-bar"><span id="movement-label">指示陪同者靠近物件</span><div><button id="move-left" aria-label="向左移动">← 向左</button><button id="move-right" aria-label="向右移动">向右 →</button></div><small>方向键 / A、D · 画布空地可点选位置</small></div><div id="object-list" class="object-list" role="group" aria-label="可交互物件"></div>
     <section id="dialogue" class="dialogue" aria-label="叙事与对话" aria-live="polite"><button id="portrait-preview" class="portrait" aria-label="查看角色完整立绘"><img id="portrait" src="${asset('art/castian.png')}" alt="卡斯蒂安半身像"/><span id="portrait-code">C / 001</span></button><div class="dialogue-body"><div class="dialogue-meta"><strong id="speaker">卡斯蒂安</strong><span id="dialogue-mode">内心独白</span><span id="line-counter"></span></div><div id="text"></div><div id="choices" class="choices"></div><div class="dialogue-footer"><span id="dialogue-hint"></span><button id="advance" class="text-button" hidden>继续 <span>→</span></button></div></div></section>
     <nav class="route" aria-label="场景流程"><div id="route-stops"></div><button id="next-scene" class="primary" disabled>请求转移 →</button></nav>
     <p class="local-note">进度仅保存在当前浏览器 · 选择不计善恶 · Esc 暂停 · M 记忆 · V 切换认知</p>
@@ -65,7 +67,7 @@ $('#enter').onclick=()=>{
   $('#gate').hidden=true;$('#shell').hidden=false;
   room=new RoomScene(inspect,()=>{$('#loading').hidden=true;});createGame($('#game'),room);
   applySettings();render();
-  openModal('开始之前','PROLOGUE',`<p class="lead">你是卡斯蒂安。这里的人都认得你，<br/>你却不记得他们口中的那个人。</p><p>你记得自己是灰骑士——一个在遥远未来对抗恶魔的战士。如今，你在现代城市醒来，拥有同名警察的身份，身体行动需要他人协助。</p><p>点击场景中的标记，或下方物件名称来观察。切换视角，对照现实记录与主观记忆。收集碎片、完成对话，再前往下一个场景。</p><p>全篇七章，从苏醒、暂住、会面，到返回公寓、记忆裂隙和三种收束。不需要了解战锤背景；术语会在剧情与人物说明中解释。游戏不会要求你替卡斯蒂安证明创伤是否真实。</p><div class="modal-actions"><button id="begin" class="primary">从病房醒来 →</button><button id="continue-save">读取本地进度</button></div><p class="small">新故事不会立即覆盖已有存档；首次完成互动后会自动保存。读档将保留刚选择的减弱效果设置。</p>`);
+  openModal('开始之前','PROLOGUE',`<p class="lead">你是卡斯蒂安。这里的人都认得你，<br/>你却不记得他们口中的那个人。</p><p>你记得自己是灰骑士——一个在遥远未来对抗恶魔的战士。如今，你在现代城市醒来，拥有同名警察的身份，身体行动需要他人协助。</p><p>点击场景中的标记，或下方物件名称来观察。切换视角，对照现实记录与主观记忆。收集碎片、完成对话，再前往下一个场景。</p><p>本篇有十二章，穿插现代与过去两条时间线，包含电脑、手机、沉思者接线与记录排序小游戏。现代场景由其他角色代操作设备；出征前的回忆中，卡斯蒂安可以穿着动力甲移动。不需要了解战锤背景；术语会在剧情与人物说明中解释。游戏不会要求你替卡斯蒂安证明创伤是否真实。</p><div class="modal-actions"><button id="begin" class="primary">从病房醒来 →</button><button id="continue-save">读取本地进度</button></div><p class="small">新故事不会立即覆盖已有存档；首次完成互动后会自动保存。读档将保留刚选择的减弱效果设置。</p>`);
   $('#begin').onclick=()=>{closeModal();intro();};
   $('#continue-save').onclick=()=>readSave();
 };
@@ -87,6 +89,7 @@ function applySettings():void {
 }
 function syncRoom():void {
   room?.showRoom(state.scene,state.perspective,state.inspected,state.settings.reducedEffects);
+  room?.setPresentationPaused(modalOpen);
   if(room?.input)room.input.enabled=!playing&&!modalOpen&&!state.ending;
 }
 function setView(view:Perspective):void {
@@ -103,10 +106,13 @@ $('#subjective-view').onclick=()=>setView('subjective');
 function scene(){return story.scenes.find(s=>s.id===state.scene)!;}
 function render():void {
   const s=scene(),index=sceneOrder.indexOf(s.id),missing=requirements(state,s.id);
+  document.body.dataset.era=s.era;
+  $('#movement-label').textContent=s.id==='past_armoury'?'移动回忆中的卡斯蒂安（受伤前）':s.era==='past'?'移动回忆中的陪同人物':'指示陪同者移动 · 卡斯蒂安需要协助';
+  for(const id of ['#move-left','#move-right'])$<HTMLButtonElement>(id).disabled=playing||!!state.ending;
   $('#scene-name').textContent=s.title;$('#chapter').textContent=s.chapter;$('#scene-caption').textContent=s.subtitle;
-  $('#scene-number').textContent=`0${index+1} / 0${story.scenes.length}`;$('#world-time').textContent=s.time;
+  $('#scene-number').textContent=`${String(index+1).padStart(2,'0')} / ${story.scenes.length}`;$('#world-time').textContent=s.time;
   $('#objective').textContent=s.goal;
-  $('#requirements').innerHTML=missing.length?missing.map(m=>`<li>${esc(m)}</li>`).join(''):'<li class="done">当前锚点已完成</li>';
+  $('#requirements').innerHTML=missing.length?missing.map(m=>`<li>${esc(m)}</li>`).join(''):'<li class="done">本章关键步骤已完成</li>';
   $('#fragment-count').textContent=`${String(state.fragments.length).padStart(2,'0')} / ${fragmentCount}`;
   $('#recent-memories').innerHTML=state.fragments.slice(-3).reverse().map((id)=>{
     const f=story.fragments.find(f=>f.id===id)!;return `<button class="memory-mini" data-fragment="${id}"><span>◇</span><div>${esc(f.title)}<small>${esc(f.foundAt)}</small></div></button>`;
@@ -114,11 +120,11 @@ function render():void {
   document.querySelectorAll<HTMLButtonElement>('[data-fragment]').forEach(b=>b.onclick=()=>memoryPanel(b.dataset.fragment));
   $('#object-list').innerHTML=s.objects.map((o,i)=>`<button data-object="${o.id}" ${playing||state.ending?'disabled':''} class="${state.inspected.includes(o.id)?'observed':''}"><span>${String(i+1).padStart(2,'0')}</span>${esc(o.name)}${state.inspected.includes(o.id)?' ·':''}</button>`).join('');
   document.querySelectorAll<HTMLButtonElement>('[data-object]').forEach(b=>b.onclick=()=>inspect(s.objects.find(o=>o.id===b.dataset.object)!));
-  $('#route-stops').innerHTML=story.scenes.map((s,i)=>`<button data-scene="${s.id}" ${!canEnter(state,s.id)||playing||state.ending?'disabled':''} class="${s.id===state.scene?'active':''}" ${s.id===state.scene?'aria-current="step"':''}><span>0${i+1}</span>${s.title}</button>`).join('');
+  $('#route-stops').innerHTML=story.scenes.map((s,i)=>`<button data-scene="${s.id}" ${!canEnter(state,s.id)||playing||state.ending?'disabled':''} class="${s.id===state.scene?'active':''}" ${s.id===state.scene?'aria-current="step"':''}><span>${String(i+1).padStart(2,'0')}</span>${s.title}</button>`).join('');
   document.querySelectorAll<HTMLButtonElement>('[data-scene]').forEach(b=>b.onclick=()=>changeScene(b.dataset.scene as GameState['scene']));
   const next=$<HTMLButtonElement>('#next-scene');
   next.disabled=playing||(s.id==='rift'?false:missing.length>0);
-  next.textContent=state.ending?'回看结尾 →':s.id==='rift'?(state.reconstructed?'说出你的陈述 →':'重构记忆 →'):s.nextLabel+' →';
+  next.textContent=state.ending?'回看结尾 →':s.id==='rift'?(state.reconstructed?'继续最后的谈话 →':'重构记忆 →'):s.nextLabel+' →';
   setView(state.perspective);syncRoom();
 }
 function intro():void {
@@ -126,14 +132,18 @@ function intro():void {
 }
 function idle():void {
   $('#speaker').textContent='卡斯蒂安';$('#dialogue-mode').textContent='此刻';$('#line-counter').textContent='';
-  $('#text').innerHTML=paragraphs(scene().subtitle+'|'+(requirements(state,state.scene).length?'观察周围的标记，找一个能说清楚的东西。':state.scene==='rift'?'记忆已经留在档案里。下一句话，由你决定。':'现在，你可以请求转移，也可以留下来再看一会儿。'));
+  $('#text').innerHTML=paragraphs(scene().subtitle+'|'+(requirements(state,state.scene).length?'观察周围的标记，找一个能说清楚的东西。':state.scene==='rift'?'记忆已经留在档案里。下一句话，由你决定。':scene().era==='past'?'这一段回忆已经核对完，可以继续故事，也可以再看一次场景里的物件。':'现在，你可以请求转移，也可以留下来再看一会儿。'));
   portrait('卡斯蒂安');$('#advance').hidden=true;$('#choices').innerHTML='';$('#dialogue-hint').textContent='视线可以停留，故事不催促你。';
 }
 function portrait(speaker:string):void {
   const ids:Record<string,string>={'提图斯':'titus','医生':'doctor','萨拉马斯':'thalamas'};
-  const id=ids[speaker]??'castian';const image=$<HTMLImageElement>('#portrait');
-  image.src=asset(`art/${id}.png`);image.alt=`${ids[speaker]?speaker:'卡斯蒂安'}半身像`;
-  image.classList.toggle('full-sprite',id==='titus'||id==='thalamas');
+  let id=ids[speaker]??'castian';
+  if(speaker==='过去的提图斯')id='titus-armour';
+  if(speaker==='过去的萨拉马斯')id='thalamas-armour';
+  if(speaker==='卡斯蒂安'&&scene().era==='past')id='castian-armour';
+  const image=$<HTMLImageElement>('#portrait');
+  image.src=asset(`art/${id}.png`);image.alt=`${speaker==='现实记录'?'卡斯蒂安':speaker}半身像`;
+  image.classList.toggle('full-sprite',id==='titus'||id==='thalamas'||id.endsWith('-armour'));
   $('#portrait-code').textContent=({'titus':'T / 002','doctor':'D / 003','thalamas':'S / 004'} as Record<string,string>)[id]??'C / 001';
 }
 function start(nodes:DialogueNode[],finish?:()=>void):void {
@@ -171,10 +181,12 @@ function finishSequence():void {
 }
 function inspect(o:Hotspot):void {
   if(playing||modalOpen||!accepted||state.ending)return;
+  room?.approach(o.x*1600);
+  if(o.puzzle){openDevice(o);return;}
   if(o.dialogue){
     if(o.dialogue==='finalTalk'&&!state.reconstructed){memoryPanel();notice('先在档案里完成三格重构。');return;}
     const missing=localFragments(state.scene).filter(f=>!state.fragments.includes(f));
-    if(missing.length){notice('先观察场景中的关键物件，收集记忆，再与提图斯交谈。');return;}
+    if(missing.length||scene().requiredPuzzles.some(p=>!state.puzzles[p].solved)){notice('先完成本章关键观察与设备小游戏，再进行角色对话。');return;}
     activeDialogue=o.dialogue;
     sound.cue('click');start(story.dialogues[o.dialogue],()=>{
       addUnique(state.talked,o.dialogue!);addUnique(state.inspected,o.id);persist();render();idle();
@@ -183,6 +195,18 @@ function inspect(o:Hotspot):void {
   playing=true;activeObject=o;cursor=0;render();showObjectText();
   sound.cue(o.effect?'horror':'click');if(o.effect)horror();
 }
+function openDevice(o:Hotspot):void {
+  const id=o.puzzle!;
+  openModal(puzzleNames[id],scene().era==='past'?'IMPERIAL TERMINAL / 过去线设备':'DEVICE SESSION / 代操作', '<div id="puzzle-root"></div>');
+  $('#modal').classList.add('device-modal');
+  mountPuzzle($('#puzzle-root'),id,state.puzzles[id],()=>persist(),()=>{
+    addUnique(state.inspected,o.id);if(o.fragment)addUnique(state.fragments,o.fragment);
+    remember(state,'设备记录',o.name+'已完成：'+o.objective.join('|'));
+    sound.cue('memory');persist();render();
+  },()=>{closeModal();render();idle();});
+}
+$('#move-left').onclick=()=>{if(!playing&&!modalOpen)room?.nudge(-1);};
+$('#move-right').onclick=()=>{if(!playing&&!modalOpen)room?.nudge(1);};
 function showObjectText():void {
   if(!activeObject)return;
   const o=activeObject,lines=o[state.perspective];cursor=Math.min(cursor,lines.length-1);
@@ -225,6 +249,7 @@ $('#next-scene').onclick=()=>{
 };
 function openModal(title:string,kicker:string,content:string):void {
   returnFocus=document.activeElement as HTMLElement;modalOpen=true;syncRoom();
+  $('#modal').classList.remove('device-modal');
   $('#modal-title').textContent=title;$('#modal-kicker').textContent=kicker;$('#modal-content').innerHTML=content;
   if(!$<HTMLDialogElement>('#modal').open)$<HTMLDialogElement>('#modal').showModal();
 }
@@ -239,7 +264,7 @@ function memoryPanel(selected?:string):void {
   openModal('留在意识里的东西','MEMORY ARCHIVE / '+String(cards.length).padStart(2,'0')+' OF '+fragmentCount,`
     <p class="muted">碎片并不互相抵消。左侧是当下能确认的记录，右侧是卡斯蒂安的主观解释。</p>
     <div class="memory-grid">${cards.map(f=>`<article id="fragment-${f.id}" class="memory-card ${selected===f.id?'selected':''}"><p class="eyebrow">${esc(f.foundAt)}</p><h3>◇ ${esc(f.title)}</h3><div class="dual-copy"><div><span>现实记录</span><p>${esc(f.objective)}</p></div><div><span>我的认知</span><p>${esc(f.subjective)}</p></div></div><p class="source">原作定位：PDF 第 ${esc(f.source)} 页 · 互动改写</p></article>`).join('')||'<p>还没有收集碎片。先观察病房中的监护仪、身份卡和暗处。</p>'}</div>
-    <section class="reconstruct"><p class="eyebrow">RECONSTRUCTION / 把三件事分开</p><h3>记得的事，知道的事，尚未回答的事。</h3><p>将「角落里的凡人」放入过去；将「这个世界的词」放入现在；将「塑料制成的战争」留在尚未回答的问题里。分类不会裁决记忆真假。</p><div class="slots">${['过去的声音','现在的证据','尚未回答的问题'].map((name,i)=>`<label><span>0${i+1} / ${name}</span><select data-slot="${i}" ${state.reconstructed?'disabled':''}><option value="">选择记忆碎片</option>${cards.map(f=>`<option value="${f.id}" ${state.reconstruction[i]===f.id?'selected':''}>${esc(f.title)}</option>`).join('')}</select></label>`).join('')}</div><p id="reconstruct-feedback" role="status">${state.reconstructed?'三种记录已经分开。回到门前，选择第一句陈述。':state.scene!=='rift'?'在记忆裂隙中完成最终重构。此刻可以先尝试归类。':cards.length<fragmentCount?'仍需找齐十五枚碎片。':'不必强迫它们给出同一个答案。'}</p><button id="reconstruct" class="primary" ${cards.length<fragmentCount||state.scene!=='rift'||state.reconstructed?'disabled':''}>确认重构 →</button></section>`);
+    <section class="reconstruct"><p class="eyebrow">RECONSTRUCTION / 把三件事分开</p><h3>记得的事，知道的事，尚未回答的事。</h3><p>将「角落里的凡人」放入过去；将「这个世界的词」放入现在；将「塑料制成的战争」留在尚未回答的问题里。分类不会裁决记忆真假。</p><div class="slots">${['过去的声音','现在的证据','尚未回答的问题'].map((name,i)=>`<label><span>0${i+1} / ${name}</span><select data-slot="${i}" ${state.reconstructed?'disabled':''}><option value="">选择记忆碎片</option>${cards.map(f=>`<option value="${f.id}" ${state.reconstruction[i]===f.id?'selected':''}>${esc(f.title)}</option>`).join('')}</select></label>`).join('')}</div><p id="reconstruct-feedback" role="status">${state.reconstructed?'三种记录已经分开。回到门前，选择第一句陈述。':state.scene!=='rift'?'在记忆裂隙中完成最终重构。此刻可以先尝试归类。':cards.length<fragmentCount?'仍需找齐本篇全部记忆碎片。':'不必强迫它们给出同一个答案。'}</p><button id="reconstruct" class="primary" ${cards.length<fragmentCount||state.scene!=='rift'||state.reconstructed?'disabled':''}>确认重构 →</button></section>`);
   document.querySelectorAll<HTMLSelectElement>('[data-slot]').forEach(s=>s.onchange=()=>{state.reconstruction[Number(s.dataset.slot)]=s.value||null;});
   $('#reconstruct').onclick=()=>{
     if(state.scene!=='rift'||state.fragments.length!==fragmentCount)return;

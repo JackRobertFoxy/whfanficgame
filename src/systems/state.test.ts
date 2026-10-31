@@ -5,14 +5,14 @@ import {loadGame, saveGame, validateSave, SAVE_KEY, LEGACY_KEY, migrateLegacy} f
 function memoryStore(){const data=new Map<string,string>();return {getItem:(key:string)=>data.get(key)??null,setItem:(key:string,value:string)=>{data.set(key,value);}};}
 test('all narrative references, coordinates and IDs are valid',()=>{
   const ids=story.scenes.flatMap(s=>s.objects.map(o=>o.id));assert.equal(ids.length,new Set(ids).size);
-  assert.equal(story.scenes.length,7);assert.equal(story.fragments.length,15);
+  assert.equal(story.scenes.length,12);assert.equal(story.fragments.length,24);
   for(const s of story.scenes)for(const o of s.objects){
     assert.ok(o.x>0&&o.x<1&&o.y>0&&o.y<1);
     assert.ok(o.objective.length&&o.subjective.length);
     if(o.fragment)assert.ok(story.fragments.some(f=>f.id===o.fragment));
     if(o.dialogue)assert.ok(story.dialogues[o.dialogue].length);
   }
-  for(const nodes of Object.values(story.dialogues))for(const node of nodes){assert.ok(['提图斯','卡斯蒂安','医生','萨拉马斯'].includes(node.speaker));assert.ok(node.text.length);}
+  for(const nodes of Object.values(story.dialogues))for(const node of nodes){assert.ok(['提图斯','卡斯蒂安','医生','萨拉马斯','过去的提图斯','过去的萨拉马斯'].includes(node.speaker));assert.ok(node.text.length);}
 });
 test('each scene requires its fragments and dialogue before transfer',()=>{
  const s=freshState();assert.equal(moveTo(s,'rift'),false);
@@ -21,6 +21,7 @@ test('each scene requires its fragments and dialogue before transfer',()=>{
   assert.equal(moveTo(s,next),false);
   s.fragments.push(...localFragments(id));assert.equal(moveTo(s,next),false);
   const talk=story.scenes[i].objects.find(o=>o.dialogue)!.dialogue!;s.talked.push(talk);
+  for(const p of story.scenes[i].requiredPuzzles)s.puzzles[p].solved=true;
   assert.deepEqual(requirements(s,id),[]);assert.equal(moveTo(s,next),true);
  }
  assert.equal(s.fragments.length,fragmentCount-1);
@@ -39,7 +40,7 @@ test('save round trip preserves collected fragments, choices and settings',()=>{
 });
 test('missing, malformed, outdated, unknown and duplicate data do not load',()=>{
  const store=memoryStore();assert.equal(loadGame(store).ok,false);
- for(const raw of ['{',JSON.stringify({...freshState(),version:3}),JSON.stringify({...freshState(),scene:'secret'}),JSON.stringify({...freshState(),fragments:['pulse','pulse']}),JSON.stringify({...freshState(),reconstructed:true}),JSON.stringify({...freshState(),ending:'voice'})]){
+ for(const raw of ['{',JSON.stringify({...freshState(),version:99}),JSON.stringify({...freshState(),scene:'secret'}),JSON.stringify({...freshState(),fragments:['pulse','pulse']}),JSON.stringify({...freshState(),reconstructed:true}),JSON.stringify({...freshState(),ending:'voice'})]){
  store.setItem(SAVE_KEY,raw);assert.equal(loadGame(store).ok,false);assert.equal(store.getItem(SAVE_KEY),raw);
  }
  assert.equal(validateSave(null),null);
@@ -67,10 +68,16 @@ test('ending epilogues recall disclosure and the apartment boundary choice',()=>
 test('legacy progress migrates into the first incomplete chapter without erasing v1 data',()=>{
  const store=memoryStore();const legacy={version:1,scene:'rift',fragments:['pulse','name','witness'],inspected:['monitor','identity','shadow'],talked:['hospitalTalk'],flags:['trust'],settings:{reducedEffects:true}};
  const raw=JSON.stringify(legacy);store.setItem(LEGACY_KEY,raw);const loaded=loadGame(store);
- assert.equal(loaded.ok,true);if(loaded.ok){assert.equal(loaded.state.version,2);assert.equal(loaded.state.scene,'corridor');assert.equal(loaded.state.ending,null);}
+ assert.equal(loaded.ok,true);if(loaded.ok){assert.equal(loaded.state.version,3);assert.equal(loaded.state.scene,'past_armoury');assert.equal(loaded.state.ending,null);}
  assert.equal(store.getItem(LEGACY_KEY),raw);assert.equal(migrateLegacy({version:1}),null);
 });
 test('unknown decision pointers and overlong transcripts are rejected',()=>{
  const s=freshState();s.decisions={'assessmentTalk.0':'arbitrary'};assert.equal(validateSave(s),null);
  s.decisions={};s.transcript=Array.from({length:401},()=>({speaker:'卡斯蒂安',text:'x'}));assert.equal(validateSave(s),null);
+});
+
+test('puzzle progress survives save/load and malformed boards are rejected',()=>{
+ const s=freshState(),store=memoryStore();s.puzzles.laptop.text='04';s.puzzles.laptop.evidence=['archive-mail'];
+ assert.equal(saveGame(s,store).ok,true);const loaded=loadGame(store);assert.ok(loaded.ok);if(loaded.ok)assert.equal(loaded.state.puzzles.laptop.text,'04');
+ s.puzzles.timeline.values=[0,0,1,2];assert.equal(validateSave(s),null);
 });

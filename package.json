@@ -1,13 +1,13 @@
 {
   "name": "castian-a-quiet-world",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build && node scripts/offline.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "node --import tsx src/systems/state.test.ts",
+    "test": "node --import tsx src/systems/state.test.ts && node --import tsx src/systems/puzzles.test.ts",
     "test:e2e": "node scripts/smoke.mjs",
     "package": "npm run build && node scripts/package.mjs"
   },

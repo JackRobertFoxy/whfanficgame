@@ -10,3 +10,9 @@
 以上人物为本项目 AI 辅助生成，不是官方战锤插画。场景和 sigil 为原创程序生成 SVG；可用 `scripts/create-art.py` 重生成七个环境，人物 PNG 不会被该脚本覆盖。图标由 `scripts/icons.mjs` 渲染原创矢量门形，不使用现成游戏图标。
 
 所有素材在网站本地加载，运行时不连接图片生成服务。原始生成图保留在工作区 generated_images 中，网站只包含最终选择的无脸版本。
+
+## v1.1过去线最终要求
+
+新增castian-armour.png、titus-armour.png、thalamas-armour.png：全部使用全封闭头盔，无脸、头发或皮肤外露。灰骑士使用银色神盾动力甲、纯洁印记与战戟；帝皇之子为粉紫金色腐化动力甲。未佩戴头盔的中间生成稿不随网页发布。
+
+新增五个场景SVG：past_armoury、past_cell、past_rescue、study、penthouse_night。过去线包括哥特拱顶、伺服颅骨、封蜡祷文、反灵能锁链和战舰设备。角色动画为Phaser纸片位移／起伏／轻微倾斜，不是骨骼或逐帧腿部动画。
