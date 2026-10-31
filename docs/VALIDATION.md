@@ -64,3 +64,14 @@ GitHub Pages 工作流与完整静态 ZIP 已准备。管理 API 最初由环境
 构建、发布ZIP、GitHub上传和Pages实际结果仍分别记录，不能把本机通过当作公网已上线。最新远端结果见后续追加记录及codex-pages-status分支。
 
 局部回归已通过：卡斯蒂安在军械间向右移动时会停在提图斯左侧，不再叠在同一位置；四种设备的安卓对话框均无横向溢出。更新后的恐怖／音效开关也已再次执行检查。
+
+
+## v1.1 GitHub实测结果
+
+- 运行源码SHA：129b5a910622faccd09ee291754d2cc3cfb21d48。
+- 远端下载ZIP的Git对象SHA与本地一致：93a3381763d29033e9ec1aa61f8a9f0229b4d2b1。
+- 工作流运行41225769898：build_status=success，deploy_status=failure；构建包括测试、打包、Release附件上传与Pages artifact上传。
+- GitHub返回的实际失败：`Resource not accessible by integration (HTTP 403)`，发生在首次创建Pages站点；不只是云环境网络策略的问题。
+- Release网页包已由工作流上传，仓库downloads目录也保留可下载副本；源码main已推送。
+- 当前无page_url，不声称在线可玩。仓库所有者需在Settings → Pages把Source选择GitHub Actions，或提供允许首次创建Pages的受支持管理授权；不在聊天索要令牌，也不擅自改变仓库可见性。
+- 本次后续文档／截图提交使用skip ci，避免在权限未改变时重复触发同样的失败。权限改变后由助手重新触发并核验。

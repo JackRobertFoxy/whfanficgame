@@ -4,6 +4,14 @@
 
 **18+ 内容提示：** 囚禁、严重伤害的非露骨回忆、控制关系、创伤与身份错位。声音默认关闭，支持减弱闪光／抖动／幻视。本版没有色情画面。每次打开页面需要自行确认成年。
 
+## 当前发布状态
+
+扩展版已上传，GitHub构建和Release附件发布成功。Pages首次创建被仓库工作流令牌拒绝：`403 Resource not accessible by integration`。仓库所有者需在 [Pages设置](https://github.com/JackRobertFoxy/whfanficgame/settings/pages) 将Source选为GitHub Actions；启用后可继续自动部署。当前不能将预期站点当作已上线。
+
+![过去线与全封闭头盔人物](screenshots/past-line.png)
+
+[电脑解密界面](screenshots/computer.png) · [安卓手机界面](screenshots/android-phone.png)
+
 ## 下载与游玩
 
 - [GitHub仓库内完整网页包](downloads/quiet-world-web-v1.1.zip)：进入文件页后选择下载原始文件。

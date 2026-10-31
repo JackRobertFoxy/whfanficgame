@@ -42,3 +42,6 @@
 部署作业使用仓库工作流令牌尝试创建Pages，或把现有站点改为workflow构建；失败时保留GitHub返回的原因。report作业独立执行，将结果写入codex-pages-status分支的deployment.json，包含对应源SHA、构建／部署状态、实际page_url、Actions运行链接和失败原因。只有与当前源SHA匹配的success才能作为本次部署证据。
 
 CI配置行为是在用户所选仓库中执行正常发布，不会将凭据放进网页、ZIP或状态分支。应用运行不需要任何GitHub令牌。当前云环境对管理API的网络拦截与GitHub工作流自己的发布权限分别判断，不再因为本机打不开API就直接让用户手动搬运源码。
+
+
+已观测到的v1.1结果：构建和Release上传成功，但首次创建Pages返回403 Resource not accessible by integration。当前需要仓库所有者在上述Pages设置启用GitHub Actions来源。等待该状态变化后再重跑，不把重复运行当作权限修复。
