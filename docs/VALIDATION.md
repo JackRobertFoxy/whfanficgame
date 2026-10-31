@@ -75,3 +75,14 @@ GitHub Pages 工作流与完整静态 ZIP 已准备。管理 API 最初由环境
 - Release网页包已由工作流上传，仓库downloads目录也保留可下载副本；源码main已推送。
 - 当前无page_url，不声称在线可玩。仓库所有者需在Settings → Pages把Source选择GitHub Actions，或提供允许首次创建Pages的受支持管理授权；不在聊天索要令牌，也不擅自改变仓库可见性。
 - 本次后续文档／截图提交使用skip ci，避免在权限未改变时重复触发同样的失败。权限改变后由助手重新触发并核验。
+
+
+## Pages已上线：2026-11-01
+
+用户完成仓库Pages设置后，已保留其README更新并重新触发发布。本次部署源提交f5c1b780711ab6fc1c59c0edd9820a728bf81372（仅补充CI线上健康检查，游戏运行内容保持已验证的v1.1）。
+
+GitHub工作流41227042666回执：build_status=success、deploy_status=success、http_status=200、assets_ok=true。实际返回地址：https://jackrobertfoxy.github.io/whfanficgame/ 。
+
+线上健康检查由GitHub部署作业执行：验证游戏HTML标题、脚本与样式引用、manifest.webmanifest、asset-manifest.json、以及三张最终封闭头盔动力甲PNG均返回200和非空内容。当前云执行器出站策略仍限制该公网域名，因此不冒充在本机浏览器直接打开公网完成交互测试；完整电脑／安卓模拟交互已经在同样的生产子路径构建中通过。
+
+此前403是历史失败，当前已解除；无需再次要求用户设置Pages。此条后续文档提交使用skip ci，避免只为文档重复部署。

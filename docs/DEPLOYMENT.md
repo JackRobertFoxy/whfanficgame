@@ -1,3 +1,5 @@
+> 当前状态：已发布到 https://jackrobertfoxy.github.io/whfanficgame/ ，工作流41227042666部署成功且页面／主要资源HTTP检查通过。下文保留首次配置与排错说明。
+
 # GitHub Pages 与安卓网页发布
 
 目标仓库：`JackRobertFoxy/whfanficgame`。预期站点为 `https://jackrobertfoxy.github.io/whfanficgame/`；这是由仓库名推导的目标地址，只有远端发布成功且 HTTP 与浏览器验证后才能称为已上线。

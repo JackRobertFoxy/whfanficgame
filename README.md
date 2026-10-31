@@ -4,7 +4,7 @@
 
 ## 当前发布状态
 
-扩展版已上传，GitHub构建和Release附件发布成功。Pages首次创建被仓库工作流令牌拒绝：`403 Resource not accessible by integration`。仓库所有者需在 [Pages设置](https://github.com/JackRobertFoxy/whfanficgame/settings/pages) 将Source选为GitHub Actions；启用后可继续自动部署。当前不能将预期站点当作已上线。
+**已上线：[直接游玩《静室》](https://jackrobertfoxy.github.io/whfanficgame/)**。电脑和安卓浏览器共用此地址。GitHub工作流41227042666已完成构建与部署，线上页面返回HTTP 200，脚本、样式、清单与三张封闭头盔立绘均检查通过。首次进入请等待素材加载；确认成年后开始。
 
 ![过去线与全封闭头盔人物](screenshots/past-line.png)
 
@@ -14,10 +14,10 @@
 
 - [GitHub仓库内完整网页包](downloads/quiet-world-web-v1.1.zip)：进入文件页后选择下载原始文件。
 - [Release页面](https://github.com/JackRobertFoxy/whfanficgame/releases/tag/web-v1.1)：自动工作流成功后提供同一网页包。
-- 预期Pages站点：`https://jackrobertfoxy.github.io/whfanficgame/`，**以部署状态为准**。
+- [在线游玩](https://jackrobertfoxy.github.io/whfanficgame/)：电脑与安卓浏览器使用同一网址。
 - [自动部署状态分支](https://github.com/JackRobertFoxy/whfanficgame/tree/codex-pages-status)：工作流完成后生成，含实际结果及错误。
 
-静态网页包供HTTP/HTTPS托管，不能只双击HTML运行。线上电脑与安卓浏览器使用同一网址；支持首次完整缓存后的离线游玩和添加到桌面，不是原生APK。源码与网页包均推送到本仓库，上传本身不等于Pages已成功上线。
+静态网页包供HTTP/HTTPS托管，不能只双击HTML运行。线上电脑与安卓浏览器使用同一网址；支持首次完整缓存后的离线游玩和添加到桌面，不是原生APK。源码与网页包均推送到本仓库，当前版本已由Pages发布并完成线上资源检查。
 
 ## 本版内容
 
