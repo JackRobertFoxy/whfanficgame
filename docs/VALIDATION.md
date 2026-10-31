@@ -41,3 +41,11 @@ GitHub Pages 工作流与完整静态 ZIP 已准备。管理 API 最初由环境
 自动发布需要 GitHub 写入与 Pages 配置权限。若工作流无法首次启用站点，用户在仓库 Settings → Pages 将 Source 设为 GitHub Actions 后可重跑；外部权限问题与应用测试结果分开记录。
 
 安装脚本与启动说明随完整篇保存于环境草稿。草稿保存不是环境发布，新的任务快照恢复尚未独立验证。详见 DEPLOYMENT.md。
+
+## 本次远端结果
+
+完整篇提交已成功推送到 `origin/main`：`4df50605d1a1dc7c4188730339d2770a3613488c`。远端 `git ls-remote` 已核对相同 SHA。Pages 工作流在该提交中。
+
+本环境访问 GitHub Actions 网页返回 404，不能据此确认工作流状态；GitHub 管理 API 仍由代理在 CONNECT 阶段拒绝。当前网络状态显示自定义域名仍为空、运行修订 1，因此新增草稿域名尚未应用。本次不宣称 Pages 已上线，也不把推导的站点地址当作可访问链接。
+
+继续自动启用与公网核验的前提：环境设置中保存应用已加入的 `api.github.com` 和 `jackrobertfoxy.github.io`，再重新检查 Pages／Actions 权限与实际站点。代码和静态包已完成，无需用户手动搬运源码。
