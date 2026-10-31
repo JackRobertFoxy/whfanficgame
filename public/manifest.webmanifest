@@ -1,0 +1,5 @@
+{
+ "id":"./","name":"静室 · A Quiet World","short_name":"静室","description":"卡斯蒂安的双重认知心理恐怖叙事游戏。18+ 非露骨创伤主题。",
+ "lang":"zh-CN","start_url":"./","scope":"./","display":"standalone","orientation":"any","background_color":"#0c1418","theme_color":"#0c1418",
+ "icons":[{"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]
+}
