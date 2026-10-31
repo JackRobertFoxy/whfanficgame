@@ -1,46 +1,44 @@
-> 当前版本已升级为扩展篇v1.1（十二章、24碎片、存档v3）。本文件保留v1.0基线；当前变更见 [扩展设计](EXPANSION_V1_1.md)。
-
-# 完整篇项目目录
+# 项目目录 · v1.2
 
 ```text
 whfanficgame/
-├── .github/workflows/pages.yml  # main 分支的 Pages 构建与部署
+├── .github/workflows/pages.yml  # 构建、下载附件、Pages与远端结果回执
 ├── README.md
 ├── package.json / package-lock.json
-├── vite.config.ts              # 相对路径与 Phaser 分包
-├── tsconfig.json
-├── index.html
+├── vite.config.ts              # 相对路径、Phaser分包
 ├── public/
-│   ├── manifest.webmanifest    # 安卓／桌面 PWA
-│   ├── icons/                  # 192／512 应用图标
-│   └── art/                    # 七个 SVG 场景、四名无脸角色、来源说明
+│   ├── art/                    # 15个场景SVG、抽象人物与全头盔PNG
+│   ├── icons/
+│   └── manifest.webmanifest
 ├── src/
-│   ├── main.ts                 # 入口、对话、阅读、存档操作、面板
-│   ├── style.css               # 独立纸雕风 UI、触控与大字适配
+│   ├── main.ts                 # 入口、对白、档案、阅读与暂停操作
+│   ├── style.css
 │   ├── types.ts
-│   ├── data/story.json         # 七章、34 关注点、15 碎片、分支与结尾
-│   ├── game/RoomScene.ts       # Phaser 场景、角色、热点与演出
+│   ├── data/story.json         # 生成后的15章、65互动点、30碎片与收尾
+│   ├── game/RoomScene.ts       # Phaser人物移动、热点与恐怖演出
+│   ├── ui/puzzleWindow.ts      # 四种小游戏、设备窗口与代操作说明
 │   └── systems/
-│       ├── state.ts            # 流程、条件对白、重构、记录与后日谈
-│       ├── storage.ts          # v2 校验、v1 迁移、存读档
-│       ├── assets.ts           # GitHub Pages 子路径资源
-│       ├── web.ts              # PWA 注册与安装提示
-│       ├── audio.ts
-│       └── state.test.ts       # 11 项自动测试
+│       ├── state.ts / state.test.ts
+│       ├── storage.ts          # v4校验与旧剧情隔离
+│       ├── puzzles.ts / puzzles.test.ts
+│       ├── assets.ts / web.ts
+│       └── audio.ts
 ├── scripts/
-│   ├── create-art.py           # 重生成七个场景
-│   ├── icons.mjs               # 本机浏览器渲染应用图标
-│   ├── offline.mjs             # 构建后生成离线清单与 service worker
-│   ├── package.mjs             # 静态网页 ZIP
-│   ├── effects.mjs             # 恐怖效果与音效开关验证
-│   └── smoke.mjs               # 桌面＋安卓触控模拟完整通关和离线回归
-└── docs/
-    ├── GDD.md
-    ├── SCENE_FLOW.md
-    ├── DATA_MODEL.md
-    ├── PROJECT_STRUCTURE.md
-    ├── DEPLOYMENT.md
-    └── VALIDATION.md
+│   ├── narrative/              # 手写分章稿、碎片与条件回声
+│   │   └── rewrite-v12.py      # 生成运行时JSON并输出实际正文统计
+│   ├── create-art.py           # 重生成SVG，保留人物PNG
+│   ├── offline.mjs             # 内容摘要、资源清单与service worker
+│   ├── package.mjs             # 静态ZIP与仓库downloads副本
+│   ├── smoke.mjs               # 电脑／Pixel7全流程
+│   ├── movement.mjs / effects.mjs
+│   └── icons.mjs
+├── downloads/quiet-world-web-v1.2.zip
+├── docs/                       # 当前设计、原作对应、流程、数据与验收
+│   └── history/                # 历史验收，不作为当前剧情依据
+├── screenshots/
+├── dist/                       # 构建产物，不跟踪
+├── release/                    # 本地打包输出，不跟踪
+└── test-results/               # 本地测试截图，不跟踪
 ```
 
-生成且忽略：node_modules、dist、test-results、release。原 PDF 不随网页发布；网页不包含密钥或第三方运行时服务。
+修改文本应改 `scripts/narrative/0*.py` 后生成JSON。原PDF仅作私有参考，不复制到发布目录；剧情依据优先阅读 [NARRATIVE_V1_2.md](NARRATIVE_V1_2.md)。

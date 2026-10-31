@@ -91,3 +91,24 @@ s=room()+rain(800,62,600,432)
 s+='<path d="M798 58h607v444H798Z" fill="none" stroke="#647883" stroke-width="10"/><path d="M215 477H1185L1264 717L167 771Z" fill="url(#cloth)"/><path d="M176 586l87-3l21 156l-117 32Z M1154 557h86l50 171l-106 8Z" fill="#304957"/><path d="M361 626L893 600L1097 820L401 869Z" fill="#273d48" stroke="#617984" stroke-width="4"/><path d="M541 573l52-7l26 96l-65 10Z" fill="#a1b6b4"/><path d="M548 582l38-4l19 70l-47 7Z" fill="#274f4f"/><path d="M574 669l-13 38m-31 4h64" stroke="#708c94" stroke-width="6"/><path d="M835 594l113-7l42 67l-127 15Z" fill="#a2aea7"/><path d="M855 609l73-4m-66 19l74-4" stroke="#5e7278" stroke-width="3"/><path d="M1425 135v463h-58v-463Z" fill="#142631"/><path d="M1406 596v141" stroke="#506979" stroke-width="8"/>'
 (OUT/'penthouse_night.svg').write_text(svg(s))
 print('Expanded edition: 12 distinct scenes, including 3 gothic 40k past environments.')
+# v1.2: reveal tabletop imagery only in the late advertisement chapter.
+import re
+advertisement=(OUT/'penthouse.svg').read_text()
+(OUT/'advertisement.svg').write_text(advertisement.replace('A WORLD IN MINIATURE','TABLETOP / WEEKEND'))
+for name in ['bedroom','penthouse']:
+ p=OUT/(name+'.svg');body=p.read_text()
+ body=re.sub(r'<g transform="translate\((?:1205 292|400 243)\)">.*?</g>','',body)
+ body=body.replace('TABLETOP MINIATURES','EVENING WEATHER').replace('A WORLD IN MINIATURE','CITY WEATHER')
+ p.write_text(body)
+# Private bedroom: sheltered warm lamp, wash tray, soup, covered bed and city glazing.
+s=room()+rain(970,85,480,435)
+s+='<path d="M960 76h501v454H960Z" fill="none" stroke="#58727d" stroke-width="10"/><path d="M936 64h-55v510h58 M1462 66h65v510h-64" fill="#354954"/>'
+s+='<g transform="translate(-125 25) scale(1.12)">'+bed()+'</g><path d="M290 490L801 457L1039 696L361 762Z" fill="#273e48" stroke="#6f7c7b" stroke-width="4"/><path d="M300 505L490 492L521 543L322 558Z" fill="#c1bfb0"/><path d="M324 528l153-12 M331 541l125-10" stroke="#8c9d99" stroke-width="3"/>'
+s+='<ellipse cx="765" cy="589" rx="83" ry="35" fill="#9aada8"/><path d="M688 587q8 62 79 63q66-1 77-63Z" fill="#9ba8a1"/><ellipse cx="767" cy="586" rx="70" ry="25" fill="#8b6254"/><path d="M740 571q-20-23 4-47 M786 572q-18-30 9-60" stroke="#cbd3c3" stroke-opacity=".33" fill="none" stroke-width="4"/>'
+s+='<path d="M1160 600h130l40 72h-219Z" fill="#485b61"/><path d="M1224 600V380" stroke="#a5a393" stroke-width="6"/><path d="M1169 285h117l39 104h-199Z" fill="#c2b89b"/><ellipse cx="1215" cy="440" rx="300" ry="300" fill="#bca076" opacity=".08"/>'
+(OUT/'homecoming.svg').write_text(svg(s))
+# Same room, later that night: unlit soup tray, open ring box, glass and passing drone.
+s=s.replace('fill="#8b6254"','fill="#233e48"').replace('fill="url(#window)"','fill="#152d40"')
+s+='<path d="M766 539l67-5l18 51l-75 9Z" fill="#152a35" stroke="#7a8c8c" stroke-width="3"/><ellipse cx="808" cy="565" rx="13" ry="8" stroke="#c7c5b4" stroke-width="4" fill="none"/><path d="M459 484h39l-4 63h-31Z" fill="#a2b9bd" opacity=".6"/><path d="M1170 250h70l-12 15h-44Z" fill="#6f8791"/><path d="M1154 247h35m36 0h34" stroke="#a3b7b8" stroke-width="3"/><circle cx="1205" cy="269" r="4" fill="#aec4be"/>'
+(OUT/'sleepless.svg').write_text(svg(s))
+print('Narrative v1.2: 15 scenes; warm bedroom, late-night variant and delayed miniature reveal.')

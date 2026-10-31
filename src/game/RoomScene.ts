@@ -49,7 +49,7 @@ export class RoomScene extends Phaser.Scene {
   const key=JSON.stringify([id,perspective,inspected,reduced]);if(key===this.renderKey)return;this.renderKey=key;
   this.picture.setTexture(id).setDisplaySize(1600,900).clearTint();if(perspective==='subjective')this.picture.setTint(0xb9b3d3);
   const s=story.scenes.find(s=>s.id===id)!;
-  const placements:Partial<Record<SceneId,[number,number,number]>>={hospital:[1390,700,410],corridor:[1320,720,450],living:[202,710,420],bedroom:[1450,690,420],assessment:[1344,700,465],penthouse:[1408,760,510],past_armoury:[1310,765,565],past_cell:[1360,780,590],past_rescue:[1360,750,550],study:[1320,760,480],penthouse_night:[1330,760,490]};
+  const placements:Partial<Record<SceneId,[number,number,number]>>={hospital:[1390,700,410],homecoming:[1320,760,480],sleepless:[1330,760,480],corridor:[1320,720,450],living:[202,710,420],bedroom:[1450,690,420],assessment:[1344,700,465],penthouse:[1408,760,510],past_armoury:[1310,765,565],past_cell:[1360,780,590],past_rescue:[1360,750,550],study:[1320,760,480],penthouse_night:[1330,760,490]};
   const placement=placements[id];
   this.actor?.setVisible(!!placement);this.shadow?.setVisible(!!placement);
   if(placement&&this.actor){

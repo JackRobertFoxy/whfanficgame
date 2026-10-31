@@ -54,21 +54,21 @@ async function run(touch){
    if(index===0){
     await click('#save');const before=await page.locator('#fragment-count').innerText();await page.reload();await gate();await click('#continue-save');assert.equal(await page.locator('#fragment-count').innerText(),before);
     await click('#settings');const exported=page.waitForEvent('download');await click('#export-save');assert.equal((await exported).suggestedFilename(),'quiet-world-save.json');
-    const raw=await page.evaluate(()=>localStorage.getItem('quiet-world.save.v3'));
+    const raw=await page.evaluate(()=>localStorage.getItem('quiet-world.save.v4'));
     await page.locator('#import-save').setInputFiles({name:'progress.json',mimeType:'application/json',buffer:Buffer.from(raw)});await click('#confirm-import');assert.equal(await page.locator('#fragment-count').innerText(),before);
    }
    await click(`[data-object="${scene.objects.find(o=>o.dialogue).id}"]`);await drain();assert.equal(await page.locator('#next-scene').isDisabled(),false);
    if(['past_armoury','past_cell','past_rescue','study','penthouse_night'].includes(scene.id))await page.screenshot({path:`test-results/${name}-${scene.id}.png`,fullPage:true});
    await click('#next-scene');
   }
-  assert.match(await page.locator('#fragment-count').innerText(),/24 \/ 24/);await click('#memory');
+  assert.match(await page.locator('#fragment-count').innerText(),/30 \/ 30/);await click('#memory');
   const selects=page.locator('[data-slot]');await selects.nth(0).selectOption('model');await selects.nth(1).selectOption('ordinary');await selects.nth(2).selectOption('witness');await click('#reconstruct');assert.match(await page.locator('#reconstruct-feedback').innerText(),/再看看/);
   await selects.nth(0).selectOption('witness');await selects.nth(2).selectOption('model');await click('#reconstruct');assert.match(await page.locator('#reconstruct-feedback').innerText(),/已经分开/);await click('#close-modal');
   await click('#next-scene');await drain();
-  const expected=touch?'今晚的距离':'第一句自己的话';assert.equal(await page.locator('#modal-title').innerText(),expected);
-  const epilogue=await page.locator('.epilogue').innerText();assert.match(epilogue,touch?/没有交出的部分/:/另一个世界/);
+  const expected=touch?'唯有安宁':'几厘米高的战争';assert.equal(await page.locator('#modal-title').innerText(),expected);
+  const epilogue=await page.locator('.epilogue').innerText();assert.match(epilogue,touch?/他喜欢萨拉马斯/:/模型/);
   await page.screenshot({path:`test-results/${name}-ending.png`,fullPage:true});
-  if(!touch)for(const [i,title]of [[1,'今晚的距离'],[2,'正确的词']]){
+  if(!touch)for(const [i,title]of [[1,'唯有安宁'],[2,'明早九点']]){
    await click('#retry-ending');for(let j=0;j<15;j++){if(await page.locator('#choices button').count())break;await click('#advance');}
    await page.locator('#choices button').nth(i).click();await click('#advance');assert.equal(await page.locator('#modal-title').innerText(),title);
   }
@@ -77,12 +77,12 @@ async function run(touch){
   await click('#settings');await page.locator('#setting-text').check();await click('#resume');assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('large-text')),true);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');
   await click('#settings');await page.locator('#import-save').setInputFiles({name:'bad.json',mimeType:'application/json',buffer:Buffer.from('{bad')});await page.waitForFunction(()=>/损坏|无法识别/.test(document.querySelector('#toast').textContent));await click('#resume');
-  const saved=await page.evaluate(()=>localStorage.getItem('quiet-world.save.v3'));await page.evaluate(()=>localStorage.setItem('quiet-world.save.v3','{broken'));await click('#load');assert.match(await page.locator('#toast').innerText(),/损坏|读取/);await page.evaluate(s=>localStorage.setItem('quiet-world.save.v3',s),saved);
+  const saved=await page.evaluate(()=>localStorage.getItem('quiet-world.save.v4'));await page.evaluate(()=>localStorage.setItem('quiet-world.save.v4','{broken'));await click('#load');assert.match(await page.locator('#toast').innerText(),/损坏|读取/);await page.evaluate(s=>localStorage.setItem('quiet-world.save.v4',s),saved);
   // Production service worker and subpath URLs must survive complete disconnection.
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
   await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
-  await context.setOffline(true);await page.reload();await gate();await click('#continue-save');await page.locator('.epilogue').waitFor();assert.equal(await page.locator('#modal-title').innerText(),touch?'今晚的距离':'正确的词');
-  assert.deepEqual(errors,[]);console.log('PASS '+name+': 12 chapters, 24 fragments, 4 puzzles, helmeted past line, actual movement, branches, save/import/export, recap, endings, touch/layout, Pages subpath, offline reload.');
+  await context.setOffline(true);await page.reload();await gate();await click('#continue-save');await page.locator('.epilogue').waitFor();assert.equal(await page.locator('#modal-title').innerText(),touch?'唯有安宁':'明早九点');
+  assert.deepEqual(errors,[]);console.log('PASS '+name+': 15 chapters, 30 fragments, 4 puzzles, helmeted past line, actual movement, branches, save/import/export, recap, endings, touch/layout, Pages subpath, offline reload.');
  }catch(e){await page.screenshot({path:`test-results/${name}-failure.png`,fullPage:true}).catch(()=>{});throw e;}finally{await context.close();}
 }
 try{if(process.env.E2E_TARGET!=='android')await run(false);if(process.env.E2E_TARGET!=='desktop')await run(true);}finally{await browser.close();}

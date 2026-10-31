@@ -10,6 +10,6 @@ export function registerOffline(notify:(message:string)=>void):void {
  if(!import.meta.env.PROD||!('serviceWorker' in navigator))return;
  navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='OFFLINE_READY')notify('完整离线包已就绪。下次即使断网，也可从本机继续。');});
  void navigator.serviceWorker.register(asset('sw.js'),{scope:import.meta.env.BASE_URL}).then(reg=>{
-  reg.addEventListener('updatefound',()=>{const installing=reg.installing;installing?.addEventListener('statechange',()=>{if(installing.state==='installed'&&navigator.serviceWorker.controller)notify('新版本已下载。完成当前互动并存档后，刷新即可更新。');});});
+  reg.addEventListener('updatefound',()=>{const installing=reg.installing;installing?.addEventListener('statechange',()=>{if(installing.state==='installed'&&navigator.serviceWorker.controller)notify('新版本已下载。请先存档，关闭本站所有标签页后重新打开即可更新。');});});
  }).catch(()=>notify('离线缓存未能启动，联网游玩不受影响。'));
 }

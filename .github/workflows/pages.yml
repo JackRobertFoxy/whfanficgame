@@ -24,14 +24,14 @@ jobs:
       - run: npm run package
       - uses: actions/upload-artifact@v4
         with:
-          name: quiet-world-web-v1.1
-          path: release/quiet-world-web-v1.1.zip
+          name: quiet-world-web-v1.2
+          path: release/quiet-world-web-v1.2.zip
       - name: Publish downloadable game release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view web-v1.1 >/dev/null 2>&1 || gh release create web-v1.1 --target main --title "静室 · 扩展篇 v1.1" --notes "电脑与安卓浏览器共用的静态网页包。包含十二章、现代与过去双线、四种设备小游戏和全封闭头盔动力甲立绘。解压后须通过 HTTP/HTTPS 服务运行，线上版本由 Pages 发布。"
-          gh release upload web-v1.1 release/quiet-world-web-v1.1.zip --clobber
+          gh release view web-v1.2 >/dev/null 2>&1 || gh release create web-v1.2 --target main --title "静室 · 叙事重写版 v1.2" --notes "电脑与安卓浏览器共用的静态网页包。包含十五章、三十枚碎片、四种设备小游戏与全封闭头盔立绘。重写现代萨拉马斯关系、隐瞒身份的问诊与模型广告揭示。解压后须通过 HTTP/HTTPS 服务运行，线上版本由 Pages 发布。"
+          gh release upload web-v1.2 release/quiet-world-web-v1.2.zip --clobber
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -102,11 +102,16 @@ jobs:
                   parser.feed(html)
                   if not parser.urls:
                       raise RuntimeError('Game bundle references missing')
-                  paths = parser.urls + ['manifest.webmanifest','asset-manifest.json','art/castian-armour.png','art/titus-armour.png','art/thalamas-armour.png']
+                  paths = parser.urls + ['manifest.webmanifest','asset-manifest.json','art/castian-armour.png','art/titus-armour.png','art/thalamas-armour.png','art/homecoming.svg','art/sleepless.svg','art/advertisement.svg']
                   for path in paths:
                       with urllib.request.urlopen(urllib.parse.urljoin(url,path),timeout=20) as response:
-                          if response.status != 200 or not response.read(1):
+                          if response.status != 200:
                               raise RuntimeError('Asset unavailable: '+path)
+                          data = response.read()
+                          if not data:
+                              raise RuntimeError('Empty asset: '+path)
+                          if path.endswith('.js') and 'phaser-' not in path and '叙事篇 / v1.2' not in data.decode('utf-8'):
+                              raise RuntimeError('Waiting for rewritten v1.2 game bundle')
                   with open(os.environ['GITHUB_OUTPUT'],'a') as out:
                       out.write('http_status=200\nassets_ok=true\n')
                   print('Live game page and required bundles/helmeted portraits returned HTTP 200.')

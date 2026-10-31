@@ -1,16 +1,16 @@
 import {puzzleIds} from './puzzles';
 import type {GameState} from '../types';
-import {story,sceneOrder,freshState,reconstructionAnswer,flagNames,fragmentCount,requirements} from './state';
-export const SAVE_KEY='quiet-world.save.v3';
+import {story,sceneOrder,freshState,reconstructionAnswer,flagNames,fragmentCount} from './state';
+export const SAVE_KEY='quiet-world.save.v4';
 export const LEGACY_KEY='quiet-world.save.v1';
 export const AGE_KEY='quiet-world.adult-session';
 interface Store {getItem(key:string):string|null;setItem(key:string,value:string):void}
-export type SaveResult={ok:true;state:GameState}|{ok:false;message:string};
+export type SaveResult={ok:true;state:GameState;message?:string}|{ok:false;message:string};
 const strings=(v:unknown,allowed?:string[]):v is string[]=>Array.isArray(v)&&v.every(x=>typeof x==='string'&&(!allowed||allowed.includes(x)))&&new Set(v).size===v.length;
 export function validateSave(value:unknown):GameState|null {
  if(!value||typeof value!=='object')return null;
  const v=value as Record<string,unknown>;
- if(v.version!==3||!sceneOrder.includes(v.scene as never)||!['objective','subjective'].includes(v.perspective as string))return null;
+ if(v.version!==4||!sceneOrder.includes(v.scene as never)||!['objective','subjective'].includes(v.perspective as string))return null;
  if(!strings(v.visited,sceneOrder)||!v.visited.includes('hospital')||!v.visited.includes(v.scene as string))return null;
  if(!strings(v.fragments,story.fragments.map(f=>f.id))||!strings(v.inspected,story.scenes.flatMap(s=>s.objects.map(o=>o.id)))||!strings(v.talked,Object.keys(story.dialogues))||!strings(v.flags,flagNames))return null;
  if(!Array.isArray(v.reconstruction)||v.reconstruction.length!==3||!v.reconstruction.every(x=>x===null||(typeof x==='string'&&(v.fragments as string[]).includes(x))))return null;
@@ -33,19 +33,19 @@ export function validateSave(value:unknown):GameState|null {
  return structuredClone(value as GameState);
 }
 export function migrateLegacy(value:unknown):GameState|null {
- if(!value||typeof value!=='object'||![1,2].includes((value as {version:number}).version))return null;
+ if(!value||typeof value!=='object'||![1,2,3].includes((value as {version:number}).version))return null;
  const old=value as Record<string,unknown>;
  if(!strings(old.fragments)||!strings(old.inspected)||!strings(old.talked)||!strings(old.flags))return null;
- const s=freshState();s.fragments=old.fragments.filter(f=>story.fragments.some(x=>x.id===f));s.inspected=old.inspected.filter(id=>story.scenes.some(x=>x.objects.some(o=>o.id===id)));s.talked=old.talked.filter(id=>id!=='finalTalk'&&!!story.dialogues[id]);s.flags=old.flags.filter(f=>flagNames.includes(f));
- const settings=old.settings as Record<string,unknown>|undefined;
+ // The rewritten narrative cannot reuse decisions from the retired storyline.
+ // Leave old browser keys intact and carry only presentation preferences forward.
+ const s=freshState(),settings=old.settings as Record<string,unknown>|undefined;
  s.settings.reducedEffects=settings?.reducedEffects===true;
- s.visited=[];
- for(const id of sceneOrder){s.visited.push(id);s.scene=id;if(requirements(s,id).length)break;}
- return validateSave(s);
+ s.settings.textSize=settings?.textSize==='large'?'large':'normal';
+ return s;
 }
 export function parseSave(text:string):GameState|null {try{const v:unknown=JSON.parse(text);return validateSave(v)||migrateLegacy(v);}catch{return null;}}
 export function loadGame(store?:Store):SaveResult {
- try{const storage=store??localStorage;const raw=storage.getItem(SAVE_KEY)??storage.getItem('quiet-world.save.v2')??storage.getItem(LEGACY_KEY);if(!raw)return {ok:false,message:'还没有本地存档。'};const state=parseSave(raw);return state?{ok:true,state}:{ok:false,message:'存档版本不兼容或数据损坏。原存档未被覆盖，可以继续当前故事。'};}
+ try{const storage=store??localStorage;const raw=storage.getItem(SAVE_KEY)??storage.getItem('quiet-world.save.v3')??storage.getItem('quiet-world.save.v2')??storage.getItem(LEGACY_KEY);if(!raw)return {ok:false,message:'还没有本地存档。'};const state=parseSave(raw);return state?{ok:true,state,message:JSON.parse(raw).version!==4?'旧版存档已保留。新版剧情已重写，从病房重新开始；字号与减弱效果设置已带入。':undefined}:{ok:false,message:'存档版本不兼容或数据损坏。原存档未被覆盖，可以继续当前故事。'};}
  catch{return {ok:false,message:'无法读取本地存档。请检查浏览器是否允许站点存储。'};}
 }
 export function saveGame(s:GameState,store?:Store):SaveResult {

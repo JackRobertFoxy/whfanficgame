@@ -6,7 +6,7 @@ const url=process.env.DEMO_URL||'http://127.0.0.1:4173/whfanficgame/';
 async function open(touch,scene){
  const context=await browser.newContext(touch?{...devices['Pixel 7'],reducedMotion:'reduce'}:{viewport:{width:1440,height:1050},reducedMotion:'reduce'});
  const state=freshState();state.scene=scene;state.visited=story.scenes.map(s=>s.id);state.settings.reducedEffects=true;
- await context.addInitScript(s=>localStorage.setItem('quiet-world.save.v3',JSON.stringify(s)),state);
+ await context.addInitScript(s=>localStorage.setItem('quiet-world.save.v4',JSON.stringify(s)),state);
  const page=await context.newPage();await page.goto(url);await page.locator('#adult').check();await page.locator('#enter').click();await page.locator('#continue-save').click();await page.locator('#loading').waitFor({state:'hidden'});return {page,context};
 }
 try{
